@@ -1,9 +1,6 @@
 ﻿using UnityEngine;
 
-namespace IJunior.Core.UI.Dragging
+public interface IDragDestination
 {
-    public interface IDragDestination
-    {
-        void AddItem(Sprite item);
-    }
+    void AddItem(Sprite item);
 }

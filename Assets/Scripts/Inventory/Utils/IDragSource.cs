@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
 
-namespace IJunior.Core.UI.Dragging
+public interface IDragSource
 {
-    public interface IDragSource
-    {
-        Sprite GetItem();
-        void RemoveItem();
-    }
+    Sprite GetItem();
+    void RemoveItem();
 }
