@@ -6,25 +6,25 @@ namespace IJunior.UI.Inventories
 {
     public class InventoryDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        Vector3 startPosition;
-        Transform originalParent;
-        IDragSource source;
+        private Vector3 _startPosition;
+        private Transform _originalParent;
+        private IDragSource _source;
 
-        Canvas parentCanvas;
+        private Canvas _parentCanvas;
 
         private void Awake()
         {
-            parentCanvas = GetComponentInParent<Canvas>();
-            source = GetComponentInParent<IDragSource>();
+            _parentCanvas = GetComponentInParent<Canvas>();
+            _source = GetComponentInParent<IDragSource>();
         }
 
         void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
         {
-            startPosition = transform.position;
-            originalParent = transform.parent;
+            _startPosition = transform.position;
+            _originalParent = transform.parent;
 
             GetComponent<CanvasGroup>().blocksRaycasts = false;
-            transform.SetParent(parentCanvas.transform, true);
+            transform.SetParent(_parentCanvas.transform, true);
         }
 
         void IDragHandler.OnDrag(PointerEventData eventData)
@@ -34,14 +34,15 @@ namespace IJunior.UI.Inventories
 
         void IEndDragHandler.OnEndDrag(PointerEventData eventData)
         {
-            transform.position = startPosition;
+            transform.position = _startPosition;
             GetComponent<CanvasGroup>().blocksRaycasts = true;
-            transform.SetParent(originalParent, true);
+            transform.SetParent(_originalParent, true);
 
             IDragDestination container;
-            if (!EventSystem.current.IsPointerOverGameObject())
+            
+            if (EventSystem.current.IsPointerOverGameObject() == false)
             {
-                container = parentCanvas.GetComponent<IDragDestination>();
+                container = _parentCanvas.GetComponent<IDragDestination>();
             }
             else
             {
@@ -62,20 +63,22 @@ namespace IJunior.UI.Inventories
 
                 return container;
             }
+
             return null;
         }
 
         private void DropItemIntoContainer(IDragDestination destination)
         {
-            if (ReferenceEquals(destination, source)) 
+            if (ReferenceEquals(destination, _source)) 
                 return;
 
             var destinationContainer = destination as IDragContainer;
-            var sourceContainer = source as IDragContainer;
+            var sourceContainer = _source as IDragContainer;
 
-            if (destinationContainer == null || sourceContainer == null ||
-                destinationContainer.GetItem() == null ||
-                object.ReferenceEquals(destinationContainer.GetItem(), sourceContainer.GetItem()))
+            if (ReferenceEquals(destinationContainer.GetItem(), sourceContainer.GetItem()) == false)
+                return;
+
+            if (destinationContainer == null || sourceContainer == null || destinationContainer.GetItem() == null)
             {
                 AttemptSimpleTransfer(destination);
                 return;
@@ -84,11 +87,11 @@ namespace IJunior.UI.Inventories
 
         private bool AttemptSimpleTransfer(IDragDestination destination)
         {
-            var draggingItem = source.GetItem();
+            var draggingItem = _source.GetItem();
             
             if (draggingItem != null)
             {
-                source.RemoveItem();
+                _source.RemoveItem();
                 destination.AddItem(draggingItem);
                 return false;
             }

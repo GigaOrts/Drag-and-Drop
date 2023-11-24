@@ -5,21 +5,21 @@ namespace IJunior.UI.Inventories
 {
     public class InventorySlotUI : MonoBehaviour, IDragContainer
     {
-        [SerializeField] InventoryItemIcon icon = null;
+        [SerializeField] private InventoryItemIcon _icon = null;
 
         public void AddItem(Sprite item)
         {
-            icon.SetItem(item);
+            _icon.SetItem(item);
         }
 
         public Sprite GetItem()
         {
-            return icon.GetItem();
+            return _icon.GetItem();
         }
 
         public void RemoveItem()
         {
-            icon.SetItem(null);
+            _icon.SetItem(null);
         }
     }
 }
