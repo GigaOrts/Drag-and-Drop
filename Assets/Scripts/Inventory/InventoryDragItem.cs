@@ -15,7 +15,7 @@ public class InventoryDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
         _source = GetComponentInParent<IDragSource>();
     }
 
-    void IBeginDragHandler.OnBeginDrag(PointerEventData eventData)
+    public void OnBeginDrag(PointerEventData eventData)
     {
         _startPosition = transform.position;
         _originalParent = transform.parent;
@@ -24,12 +24,12 @@ public class InventoryDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
         transform.SetParent(_parentCanvas.transform, true);
     }
 
-    void IDragHandler.OnDrag(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)
     {
         transform.position = eventData.position;
     }
 
-    void IEndDragHandler.OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag(PointerEventData eventData)
     {
         transform.position = _startPosition;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
@@ -72,16 +72,16 @@ public class InventoryDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
         var destinationContainer = destination as IDragContainer;
         var sourceContainer = _source as IDragContainer;
 
-        if (destinationContainer == null || sourceContainer == null || 
+        if (destinationContainer == null || sourceContainer == null ||
             destinationContainer.GetItem() == null ||
             ReferenceEquals(destinationContainer.GetItem(), sourceContainer.GetItem()))
         {
-            AttemptSimpleTransfer(destination);
+            Transfer(destination);
             return;
         }
     }
 
-    private bool AttemptSimpleTransfer(IDragDestination destination)
+    private void Transfer(IDragDestination destination)
     {
         var draggingItem = _source.GetItem();
 
@@ -89,9 +89,6 @@ public class InventoryDragItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
         {
             _source.RemoveItem();
             destination.AddItem(draggingItem);
-            return false;
         }
-
-        return true;
     }
 }
